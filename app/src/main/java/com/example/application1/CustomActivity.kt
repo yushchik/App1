@@ -14,16 +14,56 @@ class CustomActivity : AppCompatActivity() {
         binding = ActivityCustomBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         val ft = supportFragmentManager.beginTransaction()
         val firstFragment = FirstFragment().newInstance(3, "first fragment")
         ft.replace(R.id.containerFL, firstFragment)
         ft.commit()
 
-        val ft2 = supportFragmentManager.beginTransaction()
-        val firstFragment2 = FirstFragment().newInstance(5, "first fragment 2")
-        ft2.replace(R.id.containerFL2, firstFragment2)
-        ft2.commit()
+
+        //ex.2
+        binding.btnChangeFragment.setOnClickListener {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.containerFL, BlankFragment())
+                .commit()
+        }
+
+        //ex.3
+//        supportFragmentManager
+//            .setFragmentResultListener("requestKey", this) { requestKey, bundle ->
+//                // We use a String here, but any type that can be put in a Bundle is supported
+//                val result = bundle.getString("bundleKey")
+//                // Do something with the result
+//                binding.tvTittle.text = result
+//            }
+    //
+    // ex.4
+        supportFragmentManager
+            .setFragmentResultListener("requestKey", this) { requestKey, bundle ->
+                // We use a String here, but any type that can be put in a Bundle is supported
+                val result = bundle.getBoolean("boolKey")
+                // Do something with the result
+                if(result) changeFragment()
+            }
+
+//        ex.5
+        binding.btnChangeFragment2.setOnClickListener {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.containerFL, FirstFragment())
+                .commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
+    fun changeFragment() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.containerFL, BlankFragment())
+            .commit()
     }
 
 }
