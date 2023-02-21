@@ -22,13 +22,19 @@ class CustomActivity : AppCompatActivity() {
 
         //ex.2
         binding.btnChangeFragment.setOnClickListener {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.containerFL, BlankFragment())
-                .commit()
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.containerFL, BlankFragment())
+//                .commit()
+            val ft2 = supportFragmentManager.beginTransaction()
+
+            ft2.replace(R.id.containerFL, BlankFragment()).commit()
+//            supportFragmentManager.commit {
+//                replace(R.id.containerFL, BlankFragment())
+//            }
         }
 
-        //ex.3
+//        ex.3
 //        supportFragmentManager
 //            .setFragmentResultListener("requestKey", this) { requestKey, bundle ->
 //                // We use a String here, but any type that can be put in a Bundle is supported
@@ -36,8 +42,8 @@ class CustomActivity : AppCompatActivity() {
 //                // Do something with the result
 //                binding.tvTittle.text = result
 //            }
-    //
-    // ex.4
+        //
+        // ex.4
         supportFragmentManager
             .setFragmentResultListener("requestKey", this) { requestKey, bundle ->
                 // We use a String here, but any type that can be put in a Bundle is supported
@@ -47,22 +53,28 @@ class CustomActivity : AppCompatActivity() {
             }
 
 //        ex.5
-        binding.btnChangeFragment2.setOnClickListener {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.containerFL, FirstFragment())
-                .commit()
-        }
+//        binding.btnChangeFragment2.setOnClickListener {
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.containerFL, FirstFragment())
+//                .commit()
+//        }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
+//        super.onBackPressed()
+        if(supportFragmentManager.backStackEntryCount > 0){
+            supportFragmentManager.popBackStackImmediate()
+        }
+        else{
+            super.onBackPressed()
+        }
     }
 
-    fun changeFragment() {
+    private fun changeFragment() {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.containerFL, BlankFragment())
+            .replace(R.id.containerFL, BlankFragment.newInstance("Second"))
             .commit()
     }
 
