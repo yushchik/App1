@@ -26,4 +26,14 @@
     <style name="Butt">
         <item name="android:backgroundTint">@color/black</item>
     </style>
+
+    <style name="CutShapeTheme" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceMediumComponent">@style/CutShapeAppearance</item>
+    </style>
+
+    <style name="CutShapeAppearance" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">10dp</item>
+    </style>
 </resources>
