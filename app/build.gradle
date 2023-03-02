@@ -51,4 +51,19 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.5.5"
     // Logging
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    // Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.1.0-alpha01"
+
+    // Proto DataStore
+    implementation  "androidx.datastore:datastore-core:1.1.0-alpha01"
+
+    implementation "androidx.preference:preference-ktx:1.2.0"
+
+    // Lifecycle component
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+
+    // Kotlin coroutines components
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 }
