@@ -1,21 +1,14 @@
 package com.example.application1
 
-import android.Manifest
-import android.R
-import android.app.Activity
-import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.os.Environment
+import android.os.storage.StorageManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import com.example.application1.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import java.io.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,120 +17,118 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val firstFragment = FirstFragment().newInstance(3, "first fragment")
 
-        binding.buttonFirst.setOnClickListener {
-//один пермишен
-//            showCallApp()
 
-            //несколько пермишеном
-            checkMultiplePermissions()
-
-            //открытие звонилки без пермишенов
-//            val callIntent = Intent(Intent.ACTION_DIAL)
-//            callIntent.data = Uri.parse("tel:" + "123")
-//            startActivity(callIntent)
-
+        //ЗАПИСЬ В ФАЙЛ
+        //Имя файла
+        val filename = "MyFile"
+        //Содержимое файла
+        val contents = "Contents for APP "
+        val contents2 = "Contents for APP авлваолавлоал "
+        //Открываем поток для записи
+        this.openFileOutput(filename, Context.MODE_PRIVATE).use {
+            it.write(contents.toByteArray())
         }
-    }
 
-    private fun checkPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this, permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
+//
+//
+//        //ЧТЕНИЕ ИЗ ФАЙЛА
+        this.openFileInput(filename).bufferedReader().useLines { lines ->
+            var result = ""
+            lines.forEach {
+                result += it
+            }
+            binding.tv.text = result
+        }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_FOR_MULTIPLE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Camera and Call Permissions granted", Toast.LENGTH_SHORT)
-                    .show()
-                //openCamera()
-            } else if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Camera Permission granted", Toast.LENGTH_SHORT).show()
-            } else if (grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "CALL Permission granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Permissions denied", Toast.LENGTH_SHORT).show()
+        //ВЫВОД СПИСКА ФАЙЛОВ
+        val files = this.fileList()
+        files.forEach {
+            println("my files: $it")
+        }
+
+
+        //СОЗДАНИЕ, ЗАПИСЬ И ВЫВОД ФАЙЛА В КЕШЕ
+
+        val fileTempName = "temp_file"
+        val contentsForTemp = "Temp Contents "
+        File.createTempFile(fileTempName, null, this.cacheDir)
+
+        val tempFiles = this.cacheDir.listFiles()
+        val file2 = File(this.cacheDir, tempFiles[0].name)
+
+        val fw = FileWriter(file2.absoluteFile)
+        val bw = BufferedWriter(fw)
+        bw.write(contentsForTemp)
+        bw.close()
+
+        file2.bufferedReader().useLines { lines ->
+            var result = ""
+            lines.forEach {
+                result += it
+            }
+            binding.tv.text = result
+        }
+
+
+        //СОЗДАНИЕ И ЗАПИСЬ В ExternalStorage
+//
+        val externalState = Environment.getExternalStorageState()
+        println("getExternalStorageState: $externalState")
+        //Получаем состояние хранилища
+        //Название файла
+        val externalFileName = "MyExternalFile"
+        val contentsExternal = "Contents for External "
+
+        //Производим проверку состояния
+        if (externalState == Environment.MEDIA_MOUNTED) {
+            //Создаем файл в хранилище
+            val file = File(this.getExternalFilesDir("LOCAL"), externalFileName)
+            //Создаем буфер для записи, используем use, чтобы закрыть потом поток
+            BufferedWriter(FileWriter(file)).use {
+                //Пишем в файл
+                it.write(contentsExternal)
             }
         }
-    }
-
-
-    private fun showCallApp() {
-        if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CODE
-            )
-        } else {
-            call()
-        }
-    }
-
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == REQUEST_CODE)
-//            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-//                if (applicationContext != null) {
-//                    call()
-//                }
-//            } else {
-//                binding.tv1.text = "Permission revoke"
-//            }
-////        if(requestCode == REQUEST_CODE)
-////            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-////                binding.tv1.text = "Permission granted"
-////            }else binding.tv1.text = "Permission revoke"
-////        else binding.tv1.text = "Permission revoke"
-//    }
-
-    fun call() {
-        val dialIntent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "123456789"))
-        startActivity(dialIntent)
-    }
-
-
-    fun checkMultiplePermissions() {
-        if (checkPermission(Manifest.permission.CAMERA) && checkPermission(Manifest.permission.CALL_PHONE)) {
-            Toast.makeText(this, "Camera and Call Permissions granted", Toast.LENGTH_SHORT).show()
-        } else {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                AlertDialog.Builder(this)
-                    .setMessage("Need camera permission to capture image. Please provide permission to access your camera.")
-                    .setPositiveButton("OK") { dialogInterface, i ->
-                        dialogInterface.dismiss()
-                        ActivityCompat.requestPermissions(
-                            this, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_FOR_MULTIPLE
-                        )
-                    }.setNegativeButton("Cancel") { dialogInterface, i ->
-                        dialogInterface.dismiss()
-                    }.create().show();
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.CALL_PHONE),
-                    REQUEST_CODE_FOR_MULTIPLE
-                )
+//
+//        //СЧИТЫВАНИЕ ИЗ ExternalStorage
+//
+        if (externalState == Environment.MEDIA_MOUNTED) {
+            //Находим файл
+            val externalFile = File(this.getExternalFilesDir(null), externalFileName)
+            //Читаем из файла все строки при помощи метода useLines, а также он помогает потом
+            //закрыть ресурсы
+            BufferedReader(FileReader(externalFile)).useLines { lines ->
+                //В параметре лямбды у нас Sequence, поэтому выводим все через цикл
+                lines.forEach {
+                    println("External file:  $it")
+                }
             }
         }
+
+//        //СОЗДАНИЕ КЕШ ФАЙЛА В ExternalStorage
+
+        val file = File.createTempFile(externalFileName, null, this.externalCacheDir)
+
+        //ЗАПРАШИВАТЬ И РЕЗЕРВИРОВАТЬ ПАМЯТЬ
+        val neededBytes = 1024 * 1024 * 100L
+        val neededBytes2 = 1024 * 1024 * 10000L
+        val storageManger = applicationContext.getSystemService<StorageManager>()!!
+        val uuid = storageManger.getUuidForPath(filesDir)
+        val availableStorage = storageManger.getAllocatableBytes(uuid)
+        println("Bytes " + availableStorage / 1024 / 1024)
+        if (availableStorage >= neededBytes) {
+            storageManger.allocateBytes(uuid, neededBytes)
+            println("Bytes allocated")
+        } else {
+            val intent = Intent(StorageManager.ACTION_MANAGE_STORAGE)
+            startActivity(intent)
+        }
+
+
     }
 
-
-    companion object {
-        const val REQUEST_CODE = 1
-        const val REQUEST_CODE_FOR_MULTIPLE = 201
-
-    }
 }
 
