@@ -66,7 +66,6 @@ class MainActivity4 : AppCompatActivity() {
             .placeholder(R.drawable.ic_launcher_foreground)//Картинка/анимация, которая будет отображаться, пока картинка не загрузится
             .error(R.drawable.ic_launcher_foreground)//Картинка, которая будет показана в случае ошибки загрузки
             .into(binding.imageView)//Указываем, куда будем загружать
-
     }
 
     fun setupImg(link: String) {
