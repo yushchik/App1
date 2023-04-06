@@ -1,11 +1,14 @@
 package com.example.application1
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.application1.databinding.ActivityMain4Binding
 import com.example.application1.listUsers.ListUsers
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -40,23 +43,16 @@ class MainActivity4 : AppCompatActivity() {
         val service = retrofit.create(RetrofitInterface::class.java)
 
         var link = ""
-        service.getUsers().enqueue(object : Callback<ListUsers> {
-            override fun onResponse(call: Call<ListUsers>, response: Response<ListUsers>) {
-                println("RETROFIT: ${response.body()}")
-                link = response.body()!!.data[0].avatar
-//                setupImg(link)
-            }
 
-            override fun onFailure(call: Call<ListUsers>, t: Throwable) {
-                t.printStackTrace()
-            }
-        })
+        GlobalScope.launch {
+            val result = service.getUsers()
+            if (result != null)
+            // Checking the results
+                Log.d("getUsers: ", result.toString())
+        }
 
-//        Glide.with(this)
-//            .load(R.drawable.img_3)
-//            .circleCrop()
-//            .into(binding.imageView)
-//
+
+
         Glide.with(this)
             .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2FEQjYeVYv86TI-kFJ0T4mu52NIKwfTz50Q&usqp=CAU")
             .into(binding.imageView2)

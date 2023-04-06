@@ -4,13 +4,14 @@ package com.example.application1
 import com.example.application1.listUsers.ListUsers
 import com.example.application1.person.Person
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface RetrofitInterface {
 
     @GET("api/users?page=2")
-    fun getUsers():Call<ListUsers>
+    suspend fun getUsers(): ListUsers
 
 
     //будьте внимательны с импортами. В данном случае нам необходимы импорты из библиотеки retrofit2
